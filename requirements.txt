@@ -1,0 +1,288 @@
+Ewallet application
+
+Users are part of our environment.
+Users can perform a transaction
+	User loading their wallet
+	User sending money to another user.
+
+
+Entities/ Resources
+
+1.User
+2.Wallet
+3.Transaction
+
+
+Requirements
+
+1. Users should be able to register with our application. Unquie users are allowed.
+ User should receive an email on sign up.
+2. User should be able to authenticate.
+3. User can update the profile.
+4. User can remove their account.
+5. Each user will be assigned with one wallet.
+6. Users can load the money to their wallet.
+7. Users can withdraw the money from wallet.
+8. Users can send money to another valid user.
+9. Users can view their transaction history.
+10. User can check/get the wallet balance.
+11. Authentication while transactions.
+12. Transaction notifications.
+
+
+Services
+1. User
+2. Wallet
+3. Transaction
+4. Notification
+
+
+
+API documentation
+
+
+
+User service
+
+	Signup API
+	/user.POST
+
+{
+"username":"SampleUser",
+"password":"password",
+"email":"email"
+}
+
+On success
+201.
+No body
+
+On Failure
+400 -
+{
+message:"Invalid Email ID"
+}
+
+443 - UserName not available
+{
+message: "userName not available"
+}
+500
+{
+"message":"internal Server error"
+}
+
+Get user details
+
+	/user?id=.GET -> Query param/ Request param
+	/user/id.GET  -> Path param/Path varaiable -> choose this as the ID is mandatory for functionality to work.
+
+Request Body - NA
+
+Response
+200 on success
+{
+
+"userName":"name",
+"email":"email"
+}
+
+OnFailure
+
+404 -> User not found.
+500 -> 500
+{
+"message":"internal Server error"
+}
+
+
+Delete User
+
+/user/id.DELETE
+
+Response:
+204
+
+On Failure
+404 -> User not found.
+500 -> 500
+{
+"message":"internal Server error"
+}
+
+Update user
+
+/user/id.PUT
+
+Request Body
+
+{
+
+"userName":"name",
+"email":"email"
+}
+
+onSuccess
+200
+
+Response Body:
+{
+
+"userName":"name",
+"email":"email"
+}
+
+OnFailure
+404 -> User not found.
+400 -> No change found.
+500 -> 500
+{
+"message":"internal Server error"
+}
+
+
+WalletService
+
+
+get Wallet
+
+/wallet/id.GET
+
+Request Body - NA
+
+On Success
+200
+Response Body
+{
+"walletID":1,
+"balance":100.22
+}
+
+
+OnFailure
+404 -> wallet not found
+500
+{
+"message":"internal Server error"
+}
+
+
+Transaction
+
+get transactions
+
+{user-id}/transactions?page=10&size=20.GET
+Default page: 1
+Deafult Size: 10
+
+Onsuccess
+200
+
+{
+"transactions":[],
+"walletBalance":100
+}
+
+OnFailure
+404 -> User not found
+405-> Data out of range
+405 -> Page greater than the request.
+500
+{
+"message":"internal Server error"
+}
+
+Trasfer money
+
+{user-id}/trasaction.POST
+
+Request body
+
+{
+type:"WALLET" / "USER",
+Sender:"A",
+"receiver":"B",
+"ammount":10
+
+}
+
+Response
+204 -> Transaction complete.
+
+or
+
+200
+{
+transactionId:"123",
+Status:"PENDING"
+}
+
+
+onFailure
+
+400 -> No valid recevier
+400 -> Lower balance
+500 -> Transaction failure
+
+
+
+Get transaction status
+
+/{user-id}/transaction/{transaction-id}.GET
+
+Response
+
+{
+transactionId:"123",
+Status:"PENDING" / "SUCCESS" or "Failed"
+}
+
+
+
+
+
+URL -> localhost:8080/{user-id}/transaction/{transaction-id}
+
+
+
+----
+
+Event structure
+
+Notification service
+
+{
+notificationChannel:"EMAIL","SMS"
+notificationType:SENDER_TRANSFER
+receiverEmail:"receiverEmail",
+"receiverPhone":"909324",
+"metadata":{username:"JOHN",ammount:100}
+}
+
+{
+notificationChannel:"EMAIL","SMS"
+notificationType:RECEIVER_TRANSFER
+receiverEmail:"receiverEmail",
+"receiverPhone":"909324",
+"metadata":{username:"JOHN",ammount:100}
+}
+
+{
+notificationChannel:"EMAIL","SMS"
+notificationType:WELCOME_USER
+receiverEmail:"receiverEmail",
+"receiverPhone":"909324",
+"metadata":{username:"JOHN"}
+}
+
+
+WALLET SERVICE
+
+{
+"userId":1
+}
+
+
+
+
+
