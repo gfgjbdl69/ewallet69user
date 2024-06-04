@@ -4,13 +4,16 @@ import com.gfg.ewallet69.user.domain.User;
 import com.gfg.ewallet69.user.exception.UserException;
 import com.gfg.ewallet69.user.repository.UserRepository;
 import com.gfg.ewallet69.user.service.UserService;
+import com.gfg.ewallet69.user.service.resource.TransactionRequest;
 import com.gfg.ewallet69.user.service.resource.UserRequest;
 import com.gfg.ewallet69.user.service.resource.UserResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.Optional;
 
@@ -26,6 +29,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     UserRepository userRepository;
+
+    @Autowired
+    RestTemplate restTemplate;
 
     @Autowired
     PasswordEncoder encoder;
@@ -72,5 +78,19 @@ public class UserServiceImpl implements UserService {
     @Override
     public User updateUser(UserRequest userRequest, String id) {
         return null;
+    }
+
+    @Override
+    public boolean transfer(Long userId, TransactionRequest request) {
+        Optional<User> senderOptional=userRepository.findById(userId);
+        if(senderOptional.isEmpty()){
+            throw new UserException("EWALLET_USER_NOT_FOUND_EXCEPTION","User not found");
+        }
+        Optional<User> receiverOptional=userRepository.findById(request.getReceiverId());
+        if(receiverOptional.isEmpty()) {
+            throw new UserException("EWALLET_RECEIVER_NOT_FOUND_EXCEPTION", "Receiver not found");
+        }
+        ResponseEntity<Boolean> response=restTemplate.postForEntity("http://TRANSACTION/transaction/"+userId,request,Boolean.class);
+        return response.getBody();
     }
 }

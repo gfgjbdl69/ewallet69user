@@ -2,6 +2,7 @@ package com.gfg.ewallet69.user.controller;
 
 import com.gfg.ewallet69.user.domain.User;
 import com.gfg.ewallet69.user.service.UserService;
+import com.gfg.ewallet69.user.service.resource.TransactionRequest;
 import com.gfg.ewallet69.user.service.resource.UserRequest;
 import com.gfg.ewallet69.user.service.resource.UserResponse;
 import jakarta.validation.Valid;
@@ -33,5 +34,13 @@ public class UserController {
     public ResponseEntity<?> deleteUser(@PathVariable("id") String id){
         User user=userService.deleteUser(id);
         return new ResponseEntity<>(new UserResponse(user),HttpStatus.OK);
+    }
+
+    @PostMapping("/user/{user-id}/transfer")
+    public ResponseEntity<?> performTransaction(@PathVariable("user-id") String userId, @RequestBody @Valid TransactionRequest transactionRequest){
+        boolean success=userService.transfer(Long.valueOf(userId),transactionRequest);
+        if(success)
+           return new ResponseEntity<>(success,HttpStatus.OK);
+        return new ResponseEntity<>(success,HttpStatus.BAD_REQUEST);
     }
 }

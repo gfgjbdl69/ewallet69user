@@ -283,6 +283,17 @@ WALLET SERVICE
 }
 
 
+Transaction flow
+
+1.Sender initiate the request to user service.
+2.User service validates if the receiver is a valid user.
+3. User service initiate the transaction to the transaction service.
+4. Transaction service calls the walletService to handle the transaction.
+5. On successful transaction, the transaction service should trigger notification to both parties.
+6. On failure, send the notification to sender party.
+
+
+
 
 
 

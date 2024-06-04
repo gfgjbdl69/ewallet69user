@@ -1,18 +1,17 @@
 package com.gfg.ewallet69.user.service.resource;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-@Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
+@Builder
 public class TransactionRequest {
 
     private Long receiverId;
     private Double amount;
     private String description;
+    private String transactionType;
 
 }
