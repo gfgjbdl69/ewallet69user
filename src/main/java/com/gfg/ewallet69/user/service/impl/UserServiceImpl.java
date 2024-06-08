@@ -2,6 +2,7 @@ package com.gfg.ewallet69.user.service.impl;
 
 import com.gfg.ewallet69.user.domain.User;
 import com.gfg.ewallet69.user.exception.UserException;
+import com.gfg.ewallet69.user.feingclient.TransactionClient;
 import com.gfg.ewallet69.user.repository.UserRepository;
 import com.gfg.ewallet69.user.service.UserService;
 import com.gfg.ewallet69.user.service.resource.TransactionRequest;
@@ -35,6 +36,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     PasswordEncoder encoder;
+
+    @Autowired
+    TransactionClient client;
 
     @Autowired
     KafkaTemplate<String,String> kafkaTemplate;
@@ -77,7 +81,22 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User updateUser(UserRequest userRequest, String id) {
-        return null;
+        Optional<User> userOptional=userRepository.findById(Long.valueOf(id));
+        if(userOptional.isEmpty()){
+            throw  new UserException("EWALLET_USER_NOT_FOUND_EXCEPTION","User not found");
+        }
+        validateChange(userOptional.get(),userRequest);
+        User user=userOptional.get();
+        user.setName(userRequest.getName());
+        user.setEmail(userRequest.getEmail());
+        user.setPassword(encoder.encode(userRequest.getPassword()));
+        return userRepository.save(user);
+    }
+
+    private void validateChange(User user, UserRequest userRequest) {
+        if(user.getName().equals(userRequest.getName()) && user.getEmail().equals(userRequest.getEmail()) && user.getPassword().equals(userRequest.getPassword())){
+            throw new UserException("EWALLET_USER_NOT_CHANGED_EXCEPTION","User not changed");
+        }
     }
 
     @Override
@@ -90,7 +109,9 @@ public class UserServiceImpl implements UserService {
         if(receiverOptional.isEmpty()) {
             throw new UserException("EWALLET_RECEIVER_NOT_FOUND_EXCEPTION", "Receiver not found");
         }
-        ResponseEntity<Boolean> response=restTemplate.postForEntity("http://TRANSACTION/transaction/"+userId,request,Boolean.class);
+        //ResponseEntity<Boolean> response=restTemplate.postForEntity("http://TRANSACTION/transaction/"+userId,request,Boolean.class);
+        ResponseEntity<Boolean> response=client.transaction(userId,request);
+
         return response.getBody();
     }
 }
