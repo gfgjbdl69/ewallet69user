@@ -1,5 +1,9 @@
 Ewallet application
 
+Developed a payment application leveraging Spring Boot, Kafka, and Hibernate for enhanced scalability and performance. The application enables users to seamlessly load funds into their wallet and conduct transactions with other users. Key functionalities include wallet management, peer-to-peer payments, and real-time notifications using Kafka messaging. This project showcased proficiency in Java, Spring Boot framework, Hibernate for ORM, and Kafka for event-driven architecture.
+
+
+
 Users are part of our environment.
 Users can perform a transaction
 	User loading their wallet
